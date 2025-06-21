@@ -165,64 +165,63 @@ const Landing = () => {
       </section>
 
       {/* Proven Results Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Bukti Nyata Keberhasilan Kami
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Lebih dari 1000+ klien telah mempercayai layanan kami dan merasakan manfaat nyata dalam optimalisasi pajak.
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Lebih dari 1000+ klien telah mempercayai layanan kami dan merasakan manfaat nyata dalam optimalisasi pajak mereka.
             </p>
           </div>
 
-          {/* Statistics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
-            <Card className="text-center">
-              <CardContent className="p-6">
-                <TrendingUp className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-                <div className="text-3xl font-bold text-gray-900 mb-2">1000+</div>
-                <p className="text-gray-600">Klien Terpuaskan</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="p-6">
-                <DollarSign className="h-12 w-12 text-green-600 mx-auto mb-4" />
-                <div className="text-3xl font-bold text-gray-900 mb-2">15M+</div>
-                <p className="text-gray-600">Total Penghematan (Juta Rp)</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="p-6">
-                <Award className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
-                <div className="text-3xl font-bold text-gray-900 mb-2">98%</div>
-                <p className="text-gray-600">Tingkat Kepuasan</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="p-6">
-                <Users className="h-12 w-12 text-purple-600 mx-auto mb-4" />
-                <div className="text-3xl font-bold text-gray-900 mb-2">5</div>
-                <p className="text-gray-600">Tahun Pengalaman</p>
-              </CardContent>
-            </Card>
+          {/* Key Statistics */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+            <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+              <TrendingUp className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+              <div className="text-3xl font-bold text-gray-900 mb-2">1000+</div>
+              <p className="text-gray-600 font-medium">Klien Terpuaskan</p>
+            </div>
+            <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+              <DollarSign className="h-12 w-12 text-green-600 mx-auto mb-4" />
+              <div className="text-3xl font-bold text-gray-900 mb-2">50M+</div>
+              <p className="text-gray-600 font-medium">Total Penghematan</p>
+              <p className="text-sm text-gray-500">(Juta Rupiah)</p>
+            </div>
+            <div className="text-center p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl">
+              <Award className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
+              <div className="text-3xl font-bold text-gray-900 mb-2">98%</div>
+              <p className="text-gray-600 font-medium">Tingkat Kepuasan</p>
+            </div>
+            <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+              <Users className="h-12 w-12 text-purple-600 mx-auto mb-4" />
+              <div className="text-3xl font-bold text-gray-900 mb-2">5+</div>
+              <p className="text-gray-600 font-medium">Tahun Pengalaman</p>
+            </div>
           </div>
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
             {/* Tax Savings Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-center">Pertumbuhan Penghematan Pajak Klien</CardTitle>
+            <Card className="shadow-lg">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl text-center text-gray-800">
+                  Pertumbuhan Penghematan Pajak Klien
+                </CardTitle>
+                <p className="text-sm text-gray-600 text-center">
+                  Penghematan dalam Miliar Rupiah per Tahun
+                </p>
               </CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfig} className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={taxSavingsData}>
+                    <BarChart data={taxSavingsData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                       <XAxis dataKey="year" />
                       <YAxis />
                       <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="savings" fill="var(--color-savings)" radius={4} />
+                      <Bar dataKey="savings" fill="var(--color-savings)" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </ChartContainer>
@@ -230,9 +229,14 @@ const Landing = () => {
             </Card>
 
             {/* Client Distribution Chart */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-center">Sebaran Jenis Klien</CardTitle>
+            <Card className="shadow-lg">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl text-center text-gray-800">
+                  Distribusi Jenis Klien
+                </CardTitle>
+                <p className="text-sm text-gray-600 text-center">
+                  Persentase Klien Berdasarkan Kategori
+                </p>
               </CardHeader>
               <CardContent>
                 <ChartContainer config={chartConfig} className="h-[300px]">
@@ -246,6 +250,7 @@ const Landing = () => {
                         fill="#8884d8"
                         dataKey="value"
                         label={({ name, value }) => `${name}: ${value}%`}
+                        labelLine={false}
                       >
                         {clientTypeData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
@@ -259,26 +264,37 @@ const Landing = () => {
             </Card>
           </div>
 
-          {/* Testimonials */}
-          <div>
-            <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
-              Apa Kata Klien Kami
+          {/* Client Testimonials */}
+          <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-8">
+            <h3 className="text-2xl font-bold text-center text-gray-900 mb-2">
+              Testimoni Klien
             </h3>
+            <p className="text-center text-gray-600 mb-8">
+              Dengarkan pengalaman langsung dari klien-klien kami
+            </p>
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {testimonials.map((testimonial, index) => (
-                <Card key={index} className="hover:shadow-lg transition-shadow duration-300">
+                <Card key={index} className="bg-white hover:shadow-xl transition-shadow duration-300 border-0">
                   <CardContent className="p-6">
-                    <div className="flex items-center mb-4">
+                    {/* Rating Stars */}
+                    <div className="flex items-center justify-center mb-4">
                       {[...Array(testimonial.rating)].map((_, i) => (
                         <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                       ))}
                     </div>
-                    <p className="text-gray-600 mb-4 italic">"{testimonial.comment}"</p>
-                    <div className="border-t pt-4">
-                      <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                      <div className="text-sm text-gray-500">{testimonial.role}</div>
-                      <div className="text-sm font-medium text-green-600 mt-2">
-                        Penghematan: {testimonial.savings}
+                    
+                    {/* Quote */}
+                    <p className="text-gray-700 mb-6 italic text-center leading-relaxed">
+                      "{testimonial.comment}"
+                    </p>
+                    
+                    {/* Client Info */}
+                    <div className="border-t pt-4 text-center">
+                      <div className="font-semibold text-gray-900 mb-1">{testimonial.name}</div>
+                      <div className="text-sm text-gray-500 mb-3">{testimonial.role}</div>
+                      <div className="inline-flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                        💰 Hemat: {testimonial.savings}
                       </div>
                     </div>
                   </CardContent>
@@ -290,7 +306,7 @@ const Landing = () => {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -314,13 +330,13 @@ const Landing = () => {
                 </Button>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 p-8 rounded-2xl">
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Tim Konsultan Profesional</h3>
               <div className="space-y-4">
                 {consultants.map((consultant, index) => (
-                  <div key={index} className="bg-white p-4 rounded-lg shadow-sm">
+                  <div key={index} className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-l-4 border-blue-500">
                     <h4 className="font-semibold text-gray-900">{consultant.name}</h4>
-                    <p className="text-blue-600 text-sm">{consultant.specialization}</p>
+                    <p className="text-blue-600 text-sm font-medium">{consultant.specialization}</p>
                     <p className="text-gray-500 text-sm">Pengalaman: {consultant.experience}</p>
                   </div>
                 ))}
