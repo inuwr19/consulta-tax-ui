@@ -1,11 +1,23 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect to dashboard on load
+    navigate('/dashboard', { replace: true });
+  }, [navigate]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+        <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
+          <span className="text-white font-bold text-xl">CT</span>
+        </div>
+        <h1 className="text-2xl font-bold mb-2">ConsultaTax</h1>
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     </div>
   );
