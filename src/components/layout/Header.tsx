@@ -17,8 +17,12 @@ const Header = () => {
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
-  const navItems = [
+  const navItems = isAdminRoute ? [
+    { path: '/admin', label: 'Admin Dashboard' },
+    { path: '/dashboard', label: 'User Dashboard' },
+  ] : [
     { path: '/dashboard', label: 'Dashboard' },
     { path: '/booking', label: 'Book Consultation' },
     { path: '/about', label: 'About Us' },
@@ -29,11 +33,14 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/dashboard" className="flex items-center space-x-2">
+          <Link to={isAdminRoute ? "/admin" : "/dashboard"} className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">CT</span>
+              <span className="text-white font-bold text-sm">AMZ</span>
             </div>
-            <span className="text-xl font-bold text-gray-900">ConsultaTax</span>
+            <div className="flex flex-col">
+              <span className="text-lg font-bold text-gray-900">AMZ Tax Consultant</span>
+              {isAdminRoute && <span className="text-xs text-gray-500">Admin Panel</span>}
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
@@ -67,16 +74,16 @@ const Header = () => {
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/placeholder-avatar.jpg" alt="User" />
-                    <AvatarFallback>JD</AvatarFallback>
+                    <AvatarFallback>{isAdminRoute ? 'AD' : 'JD'}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56 bg-white" align="end" forceMount>
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium">John Doe</p>
+                    <p className="font-medium">{isAdminRoute ? 'Admin User' : 'John Doe'}</p>
                     <p className="w-[200px] truncate text-sm text-muted-foreground">
-                      john.doe@example.com
+                      {isAdminRoute ? 'admin@amztaxconsultant.com' : 'john.doe@example.com'}
                     </p>
                   </div>
                 </div>
@@ -85,9 +92,18 @@ const Header = () => {
                   <Link to="/profile">Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
+                {isAdminRoute ? (
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard">Switch to User View</Link>
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin">Admin Panel</Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Link to="/login">Sign Out</Link>
+                  <Link to="/">Sign Out</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -131,8 +147,25 @@ const Header = () => {
                 >
                   Profile
                 </Link>
+                {isAdminRoute ? (
+                  <Link
+                    to="/dashboard"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Switch to User View
+                  </Link>
+                ) : (
+                  <Link
+                    to="/admin"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Admin Panel
+                  </Link>
+                )}
                 <Link
-                  to="/login"
+                  to="/"
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >

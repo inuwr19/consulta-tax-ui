@@ -5,7 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/layout/Layout";
+import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
@@ -24,19 +26,20 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Auth routes - no layout */}
+          {/* Public routes - no layout */}
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           
-          {/* Protected routes - with layout */}
+          {/* Protected user routes - with layout */}
           <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
           <Route path="/profile" element={<Layout><Profile /></Layout>} />
           <Route path="/booking" element={<Layout><Booking /></Layout>} />
           <Route path="/about" element={<Layout><About /></Layout>} />
           <Route path="/payment-confirmation" element={<Layout><PaymentConfirmation /></Layout>} />
           
-          {/* Root redirect */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          {/* Admin routes - with layout */}
+          <Route path="/admin" element={<Layout><AdminDashboard /></Layout>} />
           
           {/* Custom 404 page */}
           <Route path="/404" element={<CustomNotFound />} />
