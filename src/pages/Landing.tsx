@@ -205,7 +205,7 @@ const Landing = () => {
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
             {/* Tax Savings Chart */}
-            <Card className="shadow-lg">
+            <Card className="shadow-lg overflow-hidden">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl text-center text-gray-800">
                   Pertumbuhan Penghematan Pajak Klien
@@ -214,22 +214,27 @@ const Landing = () => {
                   Penghematan dalam Miliar Rupiah per Tahun
                 </p>
               </CardHeader>
-              <CardContent>
-                <ChartContainer config={chartConfig} className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={taxSavingsData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CardContent className="pb-6">
+                <div className="w-full h-80">
+                  <ChartContainer config={chartConfig} className="w-full h-full">
+                    <BarChart 
+                      data={taxSavingsData} 
+                      width="100%" 
+                      height="100%"
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    >
                       <XAxis dataKey="year" />
                       <YAxis />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar dataKey="savings" fill="var(--color-savings)" radius={[4, 4, 0, 0]} />
                     </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
+                  </ChartContainer>
+                </div>
               </CardContent>
             </Card>
 
             {/* Client Distribution Chart */}
-            <Card className="shadow-lg">
+            <Card className="shadow-lg overflow-hidden">
               <CardHeader className="pb-4">
                 <CardTitle className="text-xl text-center text-gray-800">
                   Distribusi Jenis Klien
@@ -238,15 +243,15 @@ const Landing = () => {
                   Persentase Klien Berdasarkan Kategori
                 </p>
               </CardHeader>
-              <CardContent>
-                <ChartContainer config={chartConfig} className="h-[300px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
+              <CardContent className="pb-6">
+                <div className="w-full h-80 flex items-center justify-center">
+                  <ChartContainer config={chartConfig} className="w-full h-full">
+                    <PieChart width="100%" height="100%">
                       <Pie
                         data={clientTypeData}
                         cx="50%"
                         cy="50%"
-                        outerRadius={80}
+                        outerRadius={100}
                         fill="#8884d8"
                         dataKey="value"
                         label={({ name, value }) => `${name}: ${value}%`}
@@ -258,8 +263,8 @@ const Landing = () => {
                       </Pie>
                       <ChartTooltip />
                     </PieChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
+                  </ChartContainer>
+                </div>
               </CardContent>
             </Card>
           </div>
