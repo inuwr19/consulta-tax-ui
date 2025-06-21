@@ -1,8 +1,9 @@
-
-import { ArrowRight, Users, Award, Clock, Phone, Mail, MapPin, CheckCircle } from 'lucide-react';
+import { ArrowRight, Users, Award, Clock, Phone, Mail, MapPin, CheckCircle, TrendingUp, DollarSign, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const Landing = () => {
   const services = [
@@ -48,6 +49,54 @@ const Landing = () => {
       experience: "12+ tahun"
     }
   ];
+
+  const taxSavingsData = [
+    { year: '2021', savings: 45, clients: 120 },
+    { year: '2022', savings: 78, clients: 185 },
+    { year: '2023', savings: 95, clients: 240 },
+    { year: '2024', savings: 125, clients: 310 }
+  ];
+
+  const clientTypeData = [
+    { name: 'Perusahaan', value: 60, color: '#3b82f6' },
+    { name: 'Individu', value: 35, color: '#06b6d4' },
+    { name: 'UMKM', value: 25, color: '#8b5cf6' }
+  ];
+
+  const testimonials = [
+    {
+      name: "PT. Maju Bersama",
+      role: "CFO",
+      comment: "AMZ Tax Consultant berhasil menghemat pajak perusahaan kami hingga 30% dalam 1 tahun. Sangat profesional!",
+      savings: "Rp 450 juta",
+      rating: 5
+    },
+    {
+      name: "Budi Santoso",
+      role: "Pengusaha",
+      comment: "Konsultasi pajak terbaik! Tim yang sangat kompeten dan responsif. Highly recommended!",
+      savings: "Rp 85 juta",
+      rating: 5
+    },
+    {
+      name: "CV. Berkah Jaya",
+      role: "Owner",
+      comment: "Proses konsultasi mudah dan hasilnya memuaskan. Terima kasih AMZ Tax Consultant!",
+      savings: "Rp 120 juta",
+      rating: 5
+    }
+  ];
+
+  const chartConfig = {
+    savings: {
+      label: "Penghematan (Miliar Rp)",
+      color: "#3b82f6"
+    },
+    clients: {
+      label: "Jumlah Klien",
+      color: "#06b6d4"
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -111,6 +160,131 @@ const Landing = () => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Proven Results Section */}
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Bukti Nyata Keberhasilan Kami
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Lebih dari 1000+ klien telah mempercayai layanan kami dan merasakan manfaat nyata dalam optimalisasi pajak.
+            </p>
+          </div>
+
+          {/* Statistics Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+            <Card className="text-center">
+              <CardContent className="p-6">
+                <TrendingUp className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+                <div className="text-3xl font-bold text-gray-900 mb-2">1000+</div>
+                <p className="text-gray-600">Klien Terpuaskan</p>
+              </CardContent>
+            </Card>
+            <Card className="text-center">
+              <CardContent className="p-6">
+                <DollarSign className="h-12 w-12 text-green-600 mx-auto mb-4" />
+                <div className="text-3xl font-bold text-gray-900 mb-2">15M+</div>
+                <p className="text-gray-600">Total Penghematan (Juta Rp)</p>
+              </CardContent>
+            </Card>
+            <Card className="text-center">
+              <CardContent className="p-6">
+                <Award className="h-12 w-12 text-yellow-600 mx-auto mb-4" />
+                <div className="text-3xl font-bold text-gray-900 mb-2">98%</div>
+                <p className="text-gray-600">Tingkat Kepuasan</p>
+              </CardContent>
+            </Card>
+            <Card className="text-center">
+              <CardContent className="p-6">
+                <Users className="h-12 w-12 text-purple-600 mx-auto mb-4" />
+                <div className="text-3xl font-bold text-gray-900 mb-2">5</div>
+                <p className="text-gray-600">Tahun Pengalaman</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Charts Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+            {/* Tax Savings Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-center">Pertumbuhan Penghematan Pajak Klien</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer config={chartConfig} className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={taxSavingsData}>
+                      <XAxis dataKey="year" />
+                      <YAxis />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Bar dataKey="savings" fill="var(--color-savings)" radius={4} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+
+            {/* Client Distribution Chart */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-center">Sebaran Jenis Klien</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer config={chartConfig} className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={clientTypeData}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, value }) => `${name}: ${value}%`}
+                      >
+                        {clientTypeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <ChartTooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Testimonials */}
+          <div>
+            <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
+              Apa Kata Klien Kami
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {testimonials.map((testimonial, index) => (
+                <Card key={index} className="hover:shadow-lg transition-shadow duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                      ))}
+                    </div>
+                    <p className="text-gray-600 mb-4 italic">"{testimonial.comment}"</p>
+                    <div className="border-t pt-4">
+                      <div className="font-semibold text-gray-900">{testimonial.name}</div>
+                      <div className="text-sm text-gray-500">{testimonial.role}</div>
+                      <div className="text-sm font-medium text-green-600 mt-2">
+                        Penghematan: {testimonial.savings}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
       </section>
