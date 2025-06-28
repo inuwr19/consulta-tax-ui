@@ -1,3 +1,4 @@
+
 import { ArrowRight, Users, Award, Clock, Phone, Mail, MapPin, CheckCircle, TrendingUp, DollarSign, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -217,17 +218,17 @@ const Landing = () => {
               <CardContent className="pb-6">
                 <div className="w-full h-80">
                   <ChartContainer config={chartConfig} className="w-full h-full">
-                    <BarChart 
-                      data={taxSavingsData} 
-                      width="100%" 
-                      height="100%"
-                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <XAxis dataKey="year" />
-                      <YAxis />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="savings" fill="var(--color-savings)" radius={[4, 4, 0, 0]} />
-                    </BarChart>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart 
+                        data={taxSavingsData} 
+                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <XAxis dataKey="year" />
+                        <YAxis />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Bar dataKey="savings" fill="var(--color-savings)" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
                   </ChartContainer>
                 </div>
               </CardContent>
@@ -246,23 +247,25 @@ const Landing = () => {
               <CardContent className="pb-6">
                 <div className="w-full h-80 flex items-center justify-center">
                   <ChartContainer config={chartConfig} className="w-full h-full">
-                    <PieChart width="100%" height="100%">
-                      <Pie
-                        data={clientTypeData}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, value }) => `${name}: ${value}%`}
-                        labelLine={false}
-                      >
-                        {clientTypeData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <ChartTooltip />
-                    </PieChart>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={clientTypeData}
+                          cx="50%"
+                          cy="50%"
+                          outerRadius={100}
+                          fill="#8884d8"
+                          dataKey="value"
+                          label={({ name, value }) => `${name}: ${value}%`}
+                          labelLine={false}
+                        >
+                          {clientTypeData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <ChartTooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
                   </ChartContainer>
                 </div>
               </CardContent>
