@@ -19,7 +19,7 @@ const Booking = () => {
   const [consultationType, setConsultationType] = useState('online');
   const [serviceType, setServiceType] = useState('individual-service');
   const [individualServiceType, setIndividualServiceType] = useState('spt-reporting');
-  const [notes, setNotes] = useState('');
+  const [requirements, setRequirements] = useState('');
 
   const availableTimeSlots = [
     '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'
@@ -65,7 +65,7 @@ const Booking = () => {
       time: selectedTime,
       type: consultationType,
       consultant: consultants.find(c => c.id === selectedConsultant),
-      notes
+      requirements
     };
 
     console.log('Booking data:', bookingData);
@@ -98,7 +98,12 @@ const Booking = () => {
                     <RadioGroupItem value="individual-service" id="individual-service" className="peer sr-only" />
                     <Label
                       htmlFor="individual-service"
-                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                      className={cn(
+                        "flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all",
+                        serviceType === "individual-service" 
+                          ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200" 
+                          : "border-gray-200 hover:border-primary"
+                      )}
                     >
                       <User className="h-8 w-8 text-primary mb-2" />
                       <span className="font-medium">Layanan Individu</span>
@@ -112,7 +117,12 @@ const Booking = () => {
                     <RadioGroupItem value="individual-jasa" id="individual-jasa" className="peer sr-only" />
                     <Label
                       htmlFor="individual-jasa"
-                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                      className={cn(
+                        "flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all",
+                        serviceType === "individual-jasa" 
+                          ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200" 
+                          : "border-gray-200 hover:border-primary"
+                      )}
                     >
                       <FileText className="h-8 w-8 text-primary mb-2" />
                       <span className="font-medium">Jasa Individu</span>
@@ -126,7 +136,12 @@ const Booking = () => {
                     <RadioGroupItem value="company-service" id="company-service" className="peer sr-only" />
                     <Label
                       htmlFor="company-service"
-                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                      className={cn(
+                        "flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all",
+                        serviceType === "company-service" 
+                          ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200" 
+                          : "border-gray-200 hover:border-primary"
+                      )}
                     >
                       <Users className="h-8 w-8 text-primary mb-2" />
                       <span className="font-medium">Layanan Perusahaan</span>
@@ -148,7 +163,12 @@ const Booking = () => {
                         <RadioGroupItem value="spt-reporting" id="spt-reporting" className="peer sr-only" />
                         <Label
                           htmlFor="spt-reporting"
-                          className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                          className={cn(
+                            "flex items-center p-3 border rounded-lg cursor-pointer transition-all",
+                            individualServiceType === "spt-reporting" 
+                              ? "border-blue-500 bg-blue-50 ring-1 ring-blue-200" 
+                              : "border-gray-200 hover:border-primary"
+                          )}
                         >
                           <FileText className="h-5 w-5 text-primary mr-3" />
                           <span className="font-medium">Pelaporan SPT</span>
@@ -158,7 +178,12 @@ const Booking = () => {
                         <RadioGroupItem value="income-tax-calculation" id="income-tax-calculation" className="peer sr-only" />
                         <Label
                           htmlFor="income-tax-calculation"
-                          className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                          className={cn(
+                            "flex items-center p-3 border rounded-lg cursor-pointer transition-all",
+                            individualServiceType === "income-tax-calculation" 
+                              ? "border-blue-500 bg-blue-50 ring-1 ring-blue-200" 
+                              : "border-gray-200 hover:border-primary"
+                          )}
                         >
                           <Calculator className="h-5 w-5 text-primary mr-3" />
                           <span className="font-medium">Perhitungan dan Pelaporan Pajak Penghasilan</span>
@@ -250,7 +275,12 @@ const Booking = () => {
                     <RadioGroupItem value="online" id="online" className="peer sr-only" />
                     <Label
                       htmlFor="online"
-                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                      className={cn(
+                        "flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all",
+                        consultationType === "online" 
+                          ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200" 
+                          : "border-gray-200 hover:border-primary"
+                      )}
                     >
                       <Video className="h-8 w-8 text-primary mb-2" />
                       <span className="font-medium">Online Meeting</span>
@@ -264,7 +294,12 @@ const Booking = () => {
                     <RadioGroupItem value="offline" id="offline" className="peer sr-only" />
                     <Label
                       htmlFor="offline"
-                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                      className={cn(
+                        "flex flex-col items-center justify-center p-6 border-2 rounded-lg cursor-pointer transition-all",
+                        consultationType === "offline" 
+                          ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200" 
+                          : "border-gray-200 hover:border-primary"
+                      )}
                     >
                       <MapPin className="h-8 w-8 text-primary mb-2" />
                       <span className="font-medium">Tatap Muka</span>
@@ -292,7 +327,12 @@ const Booking = () => {
                       <RadioGroupItem value={consultant.id} id={consultant.id} className="peer sr-only" />
                       <Label
                         htmlFor={consultant.id}
-                        className="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                        className={cn(
+                          "flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all",
+                          selectedConsultant === consultant.id 
+                            ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200" 
+                            : "border-gray-200 hover:border-primary"
+                        )}
                       >
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
@@ -313,19 +353,22 @@ const Booking = () => {
             </CardContent>
           </Card>
 
-          {/* Additional Notes */}
+          {/* Requirements */}
           <Card>
             <CardHeader>
-              <CardTitle>Catatan Tambahan</CardTitle>
-              <CardDescription>Tuliskan topik atau pertanyaan yang ingin Anda diskusikan</CardDescription>
+              <CardTitle>Kebutuhan Konsultan</CardTitle>
+              <CardDescription>Informasi yang diperlukan untuk konsultasi (NIK, EFIN, NPWP, dll.)</CardDescription>
             </CardHeader>
             <CardContent>
               <Textarea
-                placeholder="Contoh: Ingin konsultasi mengenai SPT Tahunan, perhitungan PPh pasal 21, dll."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Contoh: NIK: 1234567890123456, NPWP: 12.345.678.9-012.000, EFIN: sudah ada/belum ada"
+                value={requirements}
+                onChange={(e) => setRequirements(e.target.value)}
                 className="min-h-[100px]"
               />
+              <p className="text-sm text-gray-500 mt-2">
+                *Akun DJP Online akan diberitahukan pada saat sesi konsultasi
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -340,6 +383,24 @@ const Booking = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Service Type */}
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="text-sm">
+                  <div className="text-gray-600 mb-1">Jenis Layanan:</div>
+                  <div className="font-medium">
+                    {serviceType === 'individual-service' && 'Layanan Individu'}
+                    {serviceType === 'individual-jasa' && 'Jasa Individu'}
+                    {serviceType === 'company-service' && 'Layanan Perusahaan'}
+                  </div>
+                  {serviceType === 'individual-service' && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      {individualServiceType === 'spt-reporting' && '• Pelaporan SPT'}
+                      {individualServiceType === 'income-tax-calculation' && '• Perhitungan dan Pelaporan Pajak Penghasilan'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {selectedDate && (
                 <div className="p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center justify-between text-sm">
