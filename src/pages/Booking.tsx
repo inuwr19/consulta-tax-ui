@@ -6,9 +6,9 @@ import { id } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Textarea } from '@/components/ui/textarea';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
@@ -19,11 +19,27 @@ const Booking = () => {
   const [consultationType, setConsultationType] = useState('online');
   const [serviceType, setServiceType] = useState('individual-service');
   const [individualServiceType, setIndividualServiceType] = useState('spt-reporting');
-  const [requirements, setRequirements] = useState('');
+  const [nama, setNama] = useState('');
+  const [nik, setNik] = useState('');
+  const [npwp, setNpwp] = useState('');
+  const [efin, setEfin] = useState('');
 
   const availableTimeSlots = [
     '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'
   ];
+
+  const getServicePrice = () => {
+    switch (serviceType) {
+      case 'individual-service':
+        return 'Rp 70.000 - Rp 100.000';
+      case 'individual-jasa':
+        return 'Rp 100.000 - Rp 200.000';
+      case 'company-service':
+        return 'Rp 200.000 - Rp 500.000';
+      default:
+        return 'Rp 0';
+    }
+  };
 
   const consultants = [
     {
@@ -32,7 +48,7 @@ const Booking = () => {
       specialty: 'Pajak Penghasilan & PPh Badan',
       experience: '8 tahun',
       rating: 4.9,
-      price: 'Rp 150.000'
+      price: getServicePrice()
     },
     {
       id: '2',
@@ -40,7 +56,7 @@ const Booking = () => {
       specialty: 'PPN & Pajak Perdagangan',
       experience: '6 tahun',
       rating: 4.8,
-      price: 'Rp 125.000'
+      price: getServicePrice()
     },
     {
       id: '3',
@@ -48,7 +64,7 @@ const Booking = () => {
       specialty: 'BPHTB & Pajak Daerah',
       experience: '5 tahun',
       rating: 4.7,
-      price: 'Rp 100.000'
+      price: getServicePrice()
     }
   ];
 
@@ -64,8 +80,15 @@ const Booking = () => {
       date: selectedDate,
       time: selectedTime,
       type: consultationType,
+      serviceType,
+      individualServiceType: serviceType === 'individual-service' ? individualServiceType : null,
       consultant: consultants.find(c => c.id === selectedConsultant),
-      requirements
+      requirements: {
+        nama,
+        nik,
+        npwp,
+        efin
+      }
     };
 
     console.log('Booking data:', bookingData);
@@ -357,16 +380,48 @@ const Booking = () => {
           <Card>
             <CardHeader>
               <CardTitle>Kebutuhan Konsultan</CardTitle>
-              <CardDescription>Informasi yang diperlukan untuk konsultasi (NIK, EFIN, NPWP, dll.)</CardDescription>
+              <CardDescription>Informasi yang diperlukan untuk konsultasi</CardDescription>
             </CardHeader>
-            <CardContent>
-              <Textarea
-                placeholder="Contoh: NIK: 1234567890123456, NPWP: 12.345.678.9-012.000, EFIN: sudah ada/belum ada"
-                value={requirements}
-                onChange={(e) => setRequirements(e.target.value)}
-                className="min-h-[100px]"
-              />
-              <p className="text-sm text-gray-500 mt-2">
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nama">Nama Lengkap</Label>
+                  <Input
+                    id="nama"
+                    value={nama}
+                    onChange={(e) => setNama(e.target.value)}
+                    placeholder="Masukkan nama lengkap"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nik">NIK</Label>
+                  <Input
+                    id="nik"
+                    value={nik}
+                    onChange={(e) => setNik(e.target.value)}
+                    placeholder="Masukkan NIK"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="npwp">NPWP</Label>
+                  <Input
+                    id="npwp"
+                    value={npwp}
+                    onChange={(e) => setNpwp(e.target.value)}
+                    placeholder="Masukkan NPWP"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="efin">EFIN</Label>
+                  <Input
+                    id="efin"
+                    value={efin}
+                    onChange={(e) => setEfin(e.target.value)}
+                    placeholder="Masukkan EFIN (jika ada)"
+                  />
+                </div>
+              </div>
+              <p className="text-sm text-gray-500 mt-4">
                 *Akun DJP Online akan diberitahukan pada saat sesi konsultasi
               </p>
             </CardContent>
@@ -392,12 +447,20 @@ const Booking = () => {
                     {serviceType === 'individual-jasa' && 'Jasa Individu'}
                     {serviceType === 'company-service' && 'Layanan Perusahaan'}
                   </div>
-                  {serviceType === 'individual-service' && (
+                   {serviceType === 'individual-service' && (
                     <div className="text-xs text-gray-500 mt-1">
                       {individualServiceType === 'spt-reporting' && '• Pelaporan SPT'}
                       {individualServiceType === 'income-tax-calculation' && '• Perhitungan dan Pelaporan Pajak Penghasilan'}
                     </div>
                   )}
+                </div>
+              </div>
+
+              {/* Price Range */}
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="text-sm">
+                  <div className="text-gray-600 mb-1">Harga:</div>
+                  <div className="font-medium text-lg text-primary">{getServicePrice()}</div>
                 </div>
               </div>
 

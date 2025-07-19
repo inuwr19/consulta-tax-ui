@@ -1,13 +1,10 @@
 
-import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Upload, CreditCard, FileText, ArrowLeft, CheckCircle } from 'lucide-react';
+import { CreditCard, FileText, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Textarea } from '@/components/ui/textarea';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 
@@ -16,61 +13,31 @@ const PaymentConfirmation = () => {
   const navigate = useNavigate();
   const bookingData = location.state?.bookingData;
 
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [referenceNumber, setReferenceNumber] = useState('');
-  const [notes, setNotes] = useState('');
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
-  const paymentMethods = [
-    {
-      id: 'bca',
-      name: 'Bank BCA',
-      accountNumber: '1234567890',
-      accountName: 'PT ConsultaTax Indonesia'
-    },
-    {
-      id: 'mandiri',
-      name: 'Bank Mandiri',
-      accountNumber: '0987654321',
-      accountName: 'PT ConsultaTax Indonesia'
-    },
-    {
-      id: 'bni',
-      name: 'Bank BNI',
-      accountNumber: '1122334455',
-      accountName: 'PT ConsultaTax Indonesia'
-    }
-  ];
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setUploadedFile(file);
+  const getServiceTypeName = () => {
+    switch (bookingData.serviceType) {
+      case 'individual-service':
+        return 'Layanan Individu';
+      case 'individual-jasa':
+        return 'Jasa Individu';
+      case 'company-service':
+        return 'Layanan Perusahaan';
+      default:
+        return 'Unknown Service';
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!paymentMethod || !referenceNumber || !uploadedFile) {
-      alert('Mohon lengkapi semua data pembayaran');
-      return;
+  const getServicePrice = () => {
+    switch (bookingData.serviceType) {
+      case 'individual-service':
+        return 'Rp 70.000 - Rp 100.000';
+      case 'individual-jasa':
+        return 'Rp 100.000 - Rp 200.000';
+      case 'company-service':
+        return 'Rp 200.000 - Rp 500.000';
+      default:
+        return 'Rp 0';
     }
-
-    const paymentData = {
-      booking: bookingData,
-      paymentMethod: paymentMethods.find(p => p.id === paymentMethod),
-      referenceNumber,
-      notes,
-      uploadedFile: uploadedFile.name,
-      submittedAt: new Date()
-    };
-
-    console.log('Payment confirmation submitted:', paymentData);
-    
-    // Simulate successful submission
-    alert('Konfirmasi pembayaran berhasil dikirim! Kami akan memverifikasi dalam 1x24 jam.');
-    navigate('/dashboard');
   };
 
   if (!bookingData) {
@@ -100,110 +67,66 @@ const PaymentConfirmation = () => {
         <p className="text-gray-600 mt-2">Silakan lakukan pembayaran dan upload bukti transfer</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Payment Form */}
-        <div className="lg:col-span-2">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Payment Method */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <CreditCard className="h-5 w-5 mr-2" />
-                  Pilih Metode Pembayaran
-                </CardTitle>
-                <CardDescription>Transfer ke rekening berikut</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <div className="space-y-4">
-                    {paymentMethods.map((method) => (
-                      <div key={method.id} className="relative">
-                        <RadioGroupItem value={method.id} id={method.id} className="peer sr-only" />
-                        <Label
-                          htmlFor={method.id}
-                          className="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
-                        >
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-900">{method.name}</div>
-                            <div className="text-lg font-mono text-gray-700 mt-1">{method.accountNumber}</div>
-                            <div className="text-sm text-gray-500">a.n. {method.accountName}</div>
-                          </div>
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </RadioGroup>
-              </CardContent>
-            </Card>
-
-            {/* Payment Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <FileText className="h-5 w-5 mr-2" />
-                  Detail Pembayaran
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="referenceNumber">Nomor Referensi / Bukti Transfer</Label>
-                  <Input
-                    id="referenceNumber"
-                    value={referenceNumber}
-                    onChange={(e) => setReferenceNumber(e.target.value)}
-                    placeholder="Masukkan nomor referensi transfer"
-                    required
-                  />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Payment Information */}
+        <div className="space-y-6">
+          {/* Payment Method */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <CreditCard className="h-5 w-5 mr-2" />
+                Informasi Pembayaran
+              </CardTitle>
+              <CardDescription>Detail pembayaran untuk konsultasi Anda</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
+                <div className="p-4 border rounded-lg bg-blue-50 border-blue-200">
+                  <div className="font-medium text-gray-900">Bank BCA</div>
+                  <div className="text-lg font-mono text-gray-700 mt-1">1234567890</div>
+                  <div className="text-sm text-gray-500">a.n. PT ConsultaTax Indonesia</div>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="paymentProof">Upload Bukti Transfer</Label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                    <div className="text-center">
-                      <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600 mb-2">
-                        Klik untuk upload atau drag & drop file
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        Format: JPG, PNG, PDF (Maks. 5MB)
-                      </p>
-                      <Input
-                        type="file"
-                        accept="image/*,.pdf"
-                        onChange={handleFileUpload}
-                        className="mt-2"
-                        required
-                      />
-                    </div>
-                    {uploadedFile && (
-                      <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <div className="flex items-center">
-                          <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                          <span className="text-sm text-green-700">
-                            File terpilih: {uploadedFile.name}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                <div className="p-4 border rounded-lg">
+                  <div className="font-medium text-gray-900">Bank Mandiri</div>
+                  <div className="text-lg font-mono text-gray-700 mt-1">0987654321</div>
+                  <div className="text-sm text-gray-500">a.n. PT ConsultaTax Indonesia</div>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="notes">Catatan Tambahan (Opsional)</Label>
-                  <Textarea
-                    id="notes"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Tambahkan catatan jika diperlukan..."
-                  />
+                <div className="p-4 border rounded-lg">
+                  <div className="font-medium text-gray-900">Bank BNI</div>
+                  <div className="text-lg font-mono text-gray-700 mt-1">1122334455</div>
+                  <div className="text-sm text-gray-500">a.n. PT ConsultaTax Indonesia</div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Button type="submit" className="w-full" size="lg">
-              Konfirmasi Pembayaran
-            </Button>
-          </form>
+          {/* Payment Instructions */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <FileText className="h-5 w-5 mr-2" />
+                Instruksi Pembayaran
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 text-sm">
+                <p>1. Transfer sesuai nominal yang tertera di ringkasan pesanan</p>
+                <p>2. Simpan bukti transfer Anda</p>
+                <p>3. Kirim bukti transfer via WhatsApp ke: <strong>+62 812-3456-7890</strong></p>
+                <p>4. Sertakan nama dan tanggal booking dalam pesan WhatsApp</p>
+                <p>5. Tim kami akan mengonfirmasi pembayaran dalam 1x24 jam</p>
+                <p>6. Link meeting akan dikirim setelah pembayaran dikonfirmasi</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Button 
+            onClick={() => navigate('/dashboard')} 
+            className="w-full" 
+            size="lg"
+          >
+            Kembali ke Dashboard
+          </Button>
         </div>
 
         {/* Booking Summary */}
@@ -225,6 +148,18 @@ const PaymentConfirmation = () => {
                   <span className="font-medium">{bookingData.time} WIB</span>
                 </div>
                 <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Jenis Layanan:</span>
+                  <span className="font-medium">{getServiceTypeName()}</span>
+                </div>
+                {bookingData.serviceType === 'individual-service' && bookingData.individualServiceType && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Sub-layanan:</span>
+                    <span className="font-medium">
+                      {bookingData.individualServiceType === 'spt-reporting' ? 'Pelaporan SPT' : 'Perhitungan dan Pelaporan Pajak Penghasilan'}
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Metode:</span>
                   <span className="font-medium">
                     {bookingData.type === 'online' ? 'Online Meeting' : 'Tatap Muka'}
@@ -234,11 +169,14 @@ const PaymentConfirmation = () => {
                   <div className="text-gray-600 mb-1">Konsultan:</div>
                   <div className="font-medium">{bookingData.consultant?.name}</div>
                 </div>
-                {bookingData.notes && (
+                {bookingData.requirements && (
                   <div className="text-sm">
-                    <div className="text-gray-600 mb-1">Catatan:</div>
-                    <div className="text-gray-800 p-2 bg-gray-50 rounded text-xs">
-                      {bookingData.notes}
+                    <div className="text-gray-600 mb-1">Data Klien:</div>
+                    <div className="text-gray-800 p-2 bg-gray-50 rounded text-xs space-y-1">
+                      {bookingData.requirements.nama && <div>Nama: {bookingData.requirements.nama}</div>}
+                      {bookingData.requirements.nik && <div>NIK: {bookingData.requirements.nik}</div>}
+                      {bookingData.requirements.npwp && <div>NPWP: {bookingData.requirements.npwp}</div>}
+                      {bookingData.requirements.efin && <div>EFIN: {bookingData.requirements.efin}</div>}
                     </div>
                   </div>
                 )}
@@ -246,18 +184,19 @@ const PaymentConfirmation = () => {
 
               <div className="border-t pt-4">
                 <div className="flex justify-between items-center text-lg font-semibold">
-                  <span>Total Bayar:</span>
-                  <span className="text-primary">{bookingData.consultant?.price}</span>
+                  <span>Harga Layanan:</span>
+                  <span className="text-primary">{getServicePrice()}</span>
                 </div>
               </div>
 
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                 <div className="text-xs text-yellow-800">
-                  <strong>Catatan Penting:</strong>
+                  <strong>Cara Pembayaran:</strong>
                   <ul className="mt-1 space-y-1">
+                    <li>• Transfer ke salah satu rekening yang tersedia</li>
+                    <li>• Kirim bukti transfer via WhatsApp</li>
                     <li>• Pembayaran akan diverifikasi dalam 1x24 jam</li>
-                    <li>• Link meeting akan dikirim setelah pembayaran dikonfirmasi</li>
-                    <li>• Hubungi admin jika ada kendala</li>
+                    <li>• Link meeting dikirim setelah konfirmasi</li>
                   </ul>
                 </div>
               </div>
