@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Calendar, Clock, MapPin, Video, CreditCard, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, MapPin, Video, CreditCard, ArrowRight, Users, User, FileText, Calculator } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,8 @@ const Booking = () => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState('');
   const [consultationType, setConsultationType] = useState('online');
+  const [serviceType, setServiceType] = useState('individual-service');
+  const [individualServiceType, setIndividualServiceType] = useState('spt-reporting');
   const [notes, setNotes] = useState('');
 
   const availableTimeSlots = [
@@ -80,6 +82,111 @@ const Booking = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Booking Form */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Service Type Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Users className="h-5 w-5 mr-2" />
+                Jenis Layanan
+              </CardTitle>
+              <CardDescription>Pilih jenis layanan yang Anda butuhkan</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <RadioGroup value={serviceType} onValueChange={setServiceType}>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="relative">
+                    <RadioGroupItem value="individual-service" id="individual-service" className="peer sr-only" />
+                    <Label
+                      htmlFor="individual-service"
+                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                    >
+                      <User className="h-8 w-8 text-primary mb-2" />
+                      <span className="font-medium">Layanan Individu</span>
+                      <span className="text-sm text-gray-500 text-center mt-1">
+                        Konsultan memberitahu apa yang harus dilakukan
+                      </span>
+                    </Label>
+                  </div>
+
+                  <div className="relative">
+                    <RadioGroupItem value="individual-jasa" id="individual-jasa" className="peer sr-only" />
+                    <Label
+                      htmlFor="individual-jasa"
+                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                    >
+                      <FileText className="h-8 w-8 text-primary mb-2" />
+                      <span className="font-medium">Jasa Individu</span>
+                      <span className="text-sm text-gray-500 text-center mt-1">
+                        Konsultan akan mengurus semuanya untuk Anda
+                      </span>
+                    </Label>
+                  </div>
+
+                  <div className="relative">
+                    <RadioGroupItem value="company-service" id="company-service" className="peer sr-only" />
+                    <Label
+                      htmlFor="company-service"
+                      className="flex flex-col items-center justify-center p-6 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                    >
+                      <Users className="h-8 w-8 text-primary mb-2" />
+                      <span className="font-medium">Layanan Perusahaan</span>
+                      <span className="text-sm text-gray-500 text-center mt-1">
+                        Konsultasi untuk perusahaan
+                      </span>
+                    </Label>
+                  </div>
+                </div>
+              </RadioGroup>
+
+              {/* Individual Service Sub-options */}
+              {serviceType === 'individual-service' && (
+                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                  <Label className="text-base font-medium mb-4 block">Pilih Jenis Layanan Individu</Label>
+                  <RadioGroup value={individualServiceType} onValueChange={setIndividualServiceType}>
+                    <div className="space-y-3">
+                      <div className="relative">
+                        <RadioGroupItem value="spt-reporting" id="spt-reporting" className="peer sr-only" />
+                        <Label
+                          htmlFor="spt-reporting"
+                          className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                        >
+                          <FileText className="h-5 w-5 text-primary mr-3" />
+                          <span className="font-medium">Pelaporan SPT</span>
+                        </Label>
+                      </div>
+                      <div className="relative">
+                        <RadioGroupItem value="income-tax-calculation" id="income-tax-calculation" className="peer sr-only" />
+                        <Label
+                          htmlFor="income-tax-calculation"
+                          className="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
+                        >
+                          <Calculator className="h-5 w-5 text-primary mr-3" />
+                          <span className="font-medium">Perhitungan dan Pelaporan Pajak Penghasilan</span>
+                        </Label>
+                      </div>
+                    </div>
+                  </RadioGroup>
+                </div>
+              )}
+
+              {/* Company Service Note */}
+              {serviceType === 'company-service' && (
+                <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <div className="w-4 h-4 bg-yellow-400 rounded-full mt-0.5"></div>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-yellow-800">
+                        <strong>Catatan:</strong> Untuk layanan perusahaan hanya melayani konsultasi saja, untuk action lebih lanjutnya akan dilakukan secara offline karena data perusahaan bersifat rahasia.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Date & Time Selection */}
           <Card>
             <CardHeader>
