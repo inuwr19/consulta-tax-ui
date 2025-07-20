@@ -47,7 +47,7 @@ const PaymentConfirmation = () => {
     try {
       console.log("Kirim appointment_id:", bookingData);
       const response = await axios.post("/api/payments/create-snap-token", {
-        appointment_id: bookingData.appointment_id,
+        appointment_id: bookingData.id,
       });
 
       const snapToken = response.data.snapToken;
@@ -55,7 +55,26 @@ const PaymentConfirmation = () => {
 
       window.snap.pay(snapToken, {
         onSuccess: async (result: any) => {
-          alert("Pembayaran berhasil!");
+          // Success notification
+          const successDiv = document.createElement("div");
+          successDiv.innerHTML = `
+            <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+              <div class="bg-white rounded-lg p-6 max-w-sm mx-4 text-center shadow-2xl">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Pembayaran Berhasil!</h3>
+                <p class="text-gray-600 mb-4">Transaksi Anda telah berhasil diproses.</p>
+                <button onclick="this.parentElement.parentElement.remove()" 
+                        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">
+                  OK
+                </button>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(successDiv);
 
           await axios.post("/api/payments/update-status", {
             reference_number: referenceNumber,
@@ -63,7 +82,26 @@ const PaymentConfirmation = () => {
           });
         },
         onPending: async (result: any) => {
-          alert("Menunggu pembayaran.");
+          // Pending notification
+          const pendingDiv = document.createElement("div");
+          pendingDiv.innerHTML = `
+            <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+              <div class="bg-white rounded-lg p-6 max-w-sm mx-4 text-center shadow-2xl">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Menunggu Pembayaran</h3>
+                <p class="text-gray-600 mb-4">Pembayaran Anda sedang diproses.</p>
+                <button onclick="this.parentElement.parentElement.remove()" 
+                        class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition-colors">
+                  OK
+                </button>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(pendingDiv);
 
           await axios.post("/api/payments/update-status", {
             reference_number: referenceNumber,
@@ -71,7 +109,26 @@ const PaymentConfirmation = () => {
           });
         },
         onError: async (result: any) => {
-          alert("Pembayaran gagal.");
+          // Error notification
+          const errorDiv = document.createElement("div");
+          errorDiv.innerHTML = `
+            <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+              <div class="bg-white rounded-lg p-6 max-w-sm mx-4 text-center shadow-2xl">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Pembayaran Gagal</h3>
+                <p class="text-gray-600 mb-4">Terjadi kesalahan saat memproses pembayaran.</p>
+                <button onclick="this.parentElement.parentElement.remove()" 
+                        class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
+                  OK
+                </button>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(errorDiv);
 
           await axios.post("/api/payments/update-status", {
             reference_number: referenceNumber,
@@ -79,12 +136,51 @@ const PaymentConfirmation = () => {
           });
         },
         onClose: function () {
-          alert("Kamu menutup popup tanpa menyelesaikan pembayaran.");
+          // Close notification
+          const closeDiv = document.createElement("div");
+          closeDiv.innerHTML = `
+            <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+              <div class="bg-white rounded-lg p-6 max-w-sm mx-4 text-center shadow-2xl">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Pembayaran Dibatalkan</h3>
+                <p class="text-gray-600 mb-4">Anda menutup popup tanpa menyelesaikan pembayaran.</p>
+                <button onclick="this.parentElement.parentElement.remove()" 
+                        class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+                  OK
+                </button>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(closeDiv);
         },
       });
     } catch (error) {
       console.error("Gagal membuat Snap Token", error);
-      alert("Terjadi kesalahan saat memproses pembayaran.");
+
+      // Error notification for API failure
+      const apiErrorDiv = document.createElement("div");
+      apiErrorDiv.innerHTML = `
+        <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div class="bg-white rounded-lg p-6 max-w-sm mx-4 text-center shadow-2xl">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Terjadi Kesalahan</h3>
+            <p class="text-gray-600 mb-4">Gagal memproses pembayaran. Silakan coba lagi.</p>
+            <button onclick="this.parentElement.parentElement.remove()" 
+                    class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
+              OK
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(apiErrorDiv);
     }
   };
 
