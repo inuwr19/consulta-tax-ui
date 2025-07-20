@@ -1,83 +1,134 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  CreditCard,
+  FileText,
+  ArrowLeft,
+  CheckCircle,
+  User,
+  Calendar,
+  Clock,
+  Video,
+  MapPin,
+  Users,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { format } from "date-fns";
+import { id } from "date-fns/locale";
+import { Label } from "@/components/ui/label";
+import { useEffect } from "react";
+import axios from "@/lib/axios";
 
-import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Upload, CreditCard, FileText, ArrowLeft, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Textarea } from '@/components/ui/textarea';
-import { format } from 'date-fns';
-import { id } from 'date-fns/locale';
+declare global {
+  interface Window {
+    snap: any;
+  }
+}
 
 const PaymentConfirmation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const bookingData = location.state?.bookingData;
 
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [referenceNumber, setReferenceNumber] = useState('');
-  const [notes, setNotes] = useState('');
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  useEffect(() => {
+    axios.get("/sanctum/csrf-cookie").catch((err) => {
+      console.error("Gagal mengambil CSRF Cookie", err);
+    });
+  }, []);
 
-  const paymentMethods = [
-    {
-      id: 'bca',
-      name: 'Bank BCA',
-      accountNumber: '1234567890',
-      accountName: 'PT ConsultaTax Indonesia'
-    },
-    {
-      id: 'mandiri',
-      name: 'Bank Mandiri',
-      accountNumber: '0987654321',
-      accountName: 'PT ConsultaTax Indonesia'
-    },
-    {
-      id: 'bni',
-      name: 'Bank BNI',
-      accountNumber: '1122334455',
-      accountName: 'PT ConsultaTax Indonesia'
-    }
-  ];
+  const handleRedirectToPayment = async () => {
+    try {
+      console.log("Kirim appointment_id:", bookingData);
+      const response = await axios.post("/api/payments/create-snap-token", {
+        appointment_id: bookingData.appointment_id,
+      });
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setUploadedFile(file);
+      const snapToken = response.data.snapToken;
+      const referenceNumber = response.data.payment.reference_number;
+
+      window.snap.pay(snapToken, {
+        onSuccess: async (result: any) => {
+          alert("Pembayaran berhasil!");
+
+          await axios.post("/api/payments/update-status", {
+            reference_number: referenceNumber,
+            status: "paid",
+          });
+        },
+        onPending: async (result: any) => {
+          alert("Menunggu pembayaran.");
+
+          await axios.post("/api/payments/update-status", {
+            reference_number: referenceNumber,
+            status: "pending",
+          });
+        },
+        onError: async (result: any) => {
+          alert("Pembayaran gagal.");
+
+          await axios.post("/api/payments/update-status", {
+            reference_number: referenceNumber,
+            status: "failed",
+          });
+        },
+        onClose: function () {
+          alert("Kamu menutup popup tanpa menyelesaikan pembayaran.");
+        },
+      });
+    } catch (error) {
+      console.error("Gagal membuat Snap Token", error);
+      alert("Terjadi kesalahan saat memproses pembayaran.");
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!paymentMethod || !referenceNumber || !uploadedFile) {
-      alert('Mohon lengkapi semua data pembayaran');
-      return;
+  const getServiceTypeName = () => {
+    switch (bookingData.service_type) {
+      case "individual-service":
+        return "Layanan Individu";
+      case "individual-jasa":
+        return "Jasa Individu";
+      case "company-service":
+        return "Layanan Perusahaan";
+      default:
+        return "Unknown Service";
     }
+  };
 
-    const paymentData = {
-      booking: bookingData,
-      paymentMethod: paymentMethods.find(p => p.id === paymentMethod),
-      referenceNumber,
-      notes,
-      uploadedFile: uploadedFile.name,
-      submittedAt: new Date()
-    };
+  const getServicePrice = () => {
+    if (!bookingData.consultant) return "Rp 0";
 
-    console.log('Payment confirmation submitted:', paymentData);
-    
-    // Simulate successful submission
-    alert('Konfirmasi pembayaran berhasil dikirim! Kami akan memverifikasi dalam 1x24 jam.');
-    navigate('/dashboard');
+    switch (bookingData.service_type) {
+      case "individual-service":
+        return `Rp ${bookingData.consultant.price_individual_service.toLocaleString(
+          "id-ID"
+        )}`;
+      case "individual-jasa":
+        return `Rp ${bookingData.consultant.price_individual_jasa.toLocaleString(
+          "id-ID"
+        )}`;
+      case "company-service":
+        return `Rp ${bookingData.consultant.price_company_service.toLocaleString(
+          "id-ID"
+        )}`;
+      default:
+        return "Rp 0";
+    }
   };
 
   if (!bookingData) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Data booking tidak ditemukan</h1>
-        <Button onClick={() => navigate('/booking')}>
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">
+          Data booking tidak ditemukan
+        </h1>
+        <Button onClick={() => navigate("/booking")}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Kembali ke Booking
         </Button>
@@ -86,181 +137,186 @@ const PaymentConfirmation = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/booking')}
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/booking")}
           className="mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Kembali
         </Button>
-        <h1 className="text-3xl font-bold text-gray-900">Konfirmasi Pembayaran</h1>
-        <p className="text-gray-600 mt-2">Silakan lakukan pembayaran dan upload bukti transfer</p>
+        <h1 className="text-3xl font-bold text-gray-900">Detail Pembayaran</h1>
+        <p className="text-gray-600 mt-2">
+          Silakan lakukan pembayaran sesuai instruksi di bawah ini.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Payment Form */}
-        <div className="lg:col-span-2">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Payment Method */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <CreditCard className="h-5 w-5 mr-2" />
-                  Pilih Metode Pembayaran
-                </CardTitle>
-                <CardDescription>Transfer ke rekening berikut</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                  <div className="space-y-4">
-                    {paymentMethods.map((method) => (
-                      <div key={method.id} className="relative">
-                        <RadioGroupItem value={method.id} id={method.id} className="peer sr-only" />
-                        <Label
-                          htmlFor={method.id}
-                          className="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary peer-checked:border-primary peer-checked:bg-primary/5"
-                        >
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-900">{method.name}</div>
-                            <div className="text-lg font-mono text-gray-700 mt-1">{method.accountNumber}</div>
-                            <div className="text-sm text-gray-500">a.n. {method.accountName}</div>
-                          </div>
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </RadioGroup>
-              </CardContent>
-            </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                Detail Booking & Data Pribadi
+              </CardTitle>
+              <CardDescription>
+                Informasi lengkap mengenai konsultasi Anda
+              </CardDescription>
+            </CardHeader>
 
-            {/* Payment Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <FileText className="h-5 w-5 mr-2" />
-                  Detail Pembayaran
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="referenceNumber">Nomor Referensi / Bukti Transfer</Label>
-                  <Input
-                    id="referenceNumber"
-                    value={referenceNumber}
-                    onChange={(e) => setReferenceNumber(e.target.value)}
-                    placeholder="Masukkan nomor referensi transfer"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="paymentProof">Upload Bukti Transfer</Label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-                    <div className="text-center">
-                      <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-sm text-gray-600 mb-2">
-                        Klik untuk upload atau drag & drop file
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        Format: JPG, PNG, PDF (Maks. 5MB)
-                      </p>
-                      <Input
-                        type="file"
-                        accept="image/*,.pdf"
-                        onChange={handleFileUpload}
-                        className="mt-2"
-                        required
-                      />
+            <CardContent className="space-y-8 text-sm">
+              {/* Jadwal Konsultasi */}
+              <div>
+                <h3 className="text-md font-semibold text-gray-700 mb-2">
+                  Jadwal Konsultasi
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-gray-600">Tanggal</Label>
+                    <div className="p-2 rounded bg-gray-50 border text-gray-800">
+                      {format(bookingData.date, "dd MMMM yyyy", { locale: id })}
                     </div>
-                    {uploadedFile && (
-                      <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                        <div className="flex items-center">
-                          <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                          <span className="text-sm text-green-700">
-                            File terpilih: {uploadedFile.name}
-                          </span>
+                  </div>
+                  <div>
+                    <Label className="text-gray-600">Waktu</Label>
+                    <div className="p-2 rounded bg-gray-50 border text-gray-800">
+                      {bookingData.time} WIB
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <Label className="text-gray-600">Jenis Layanan</Label>
+                    <div className="p-2 rounded bg-gray-50 border text-gray-800 flex items-center gap-2">
+                      {bookingData.serviceType === "individual-service" && (
+                        <User className="h-4 w-4 text-primary" />
+                      )}
+                      {bookingData.serviceType === "individual-jasa" && (
+                        <FileText className="h-4 w-4 text-primary" />
+                      )}
+                      {bookingData.serviceType === "company-service" && (
+                        <Users className="h-4 w-4 text-primary" />
+                      )}
+                      {getServiceTypeName()}
+                    </div>
+                  </div>
+
+                  {bookingData.serviceType === "individual-service" &&
+                    bookingData.individualServiceType && (
+                      <div className="md:col-span-2">
+                        <Label className="text-gray-600">Sub-layanan</Label>
+                        <div className="p-2 rounded bg-gray-50 border text-gray-800">
+                          {bookingData.individualServiceType === "spt-reporting"
+                            ? "Pelaporan SPT"
+                            : "Perhitungan dan Pelaporan Pajak Penghasilan"}
                         </div>
                       </div>
                     )}
+
+                  <div className="md:col-span-2">
+                    <Label className="text-gray-600">Metode Konsultasi</Label>
+                    <div className="p-2 rounded bg-gray-50 border text-gray-800 flex items-center gap-2">
+                      {bookingData.type === "online" ? (
+                        <>
+                          <Video className="h-4 w-4 text-primary" />
+                          Online Meeting
+                        </>
+                      ) : (
+                        <>
+                          <MapPin className="h-4 w-4 text-primary" />
+                          Tatap Muka
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <Label className="text-gray-600">Konsultan</Label>
+                    <div className="p-2 rounded bg-gray-50 border text-gray-800">
+                      {bookingData.consultant?.name}
+                    </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="notes">Catatan Tambahan (Opsional)</Label>
-                  <Textarea
-                    id="notes"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Tambahkan catatan jika diperlukan..."
-                  />
+              {/* Data Pribadi */}
+              <div>
+                <h3 className="text-md font-semibold text-gray-700 mb-2">
+                  Data Pribadi
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-gray-600">Nama</Label>
+                    <div className="p-2 rounded bg-gray-50 border text-gray-800">
+                      {bookingData.nama}
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-600">NIK</Label>
+                    <div className="p-2 rounded bg-gray-50 border text-gray-800">
+                      {bookingData.nik}
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-gray-600">NPWP</Label>
+                    <div className="p-2 rounded bg-gray-50 border text-gray-800">
+                      {bookingData.npwp}
+                    </div>
+                  </div>
+                  {bookingData.efin && (
+                    <div>
+                      <Label className="text-gray-600">EFIN</Label>
+                      <div className="p-2 rounded bg-gray-50 border text-gray-800">
+                        {bookingData.efin}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-
-            <Button type="submit" className="w-full" size="lg">
-              Konfirmasi Pembayaran
-            </Button>
-          </form>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Booking Summary */}
-        <div className="lg:col-span-1">
+        {/* Ringkasan Booking */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* Ringkasan Pesanan */}
           <Card className="sticky top-24">
             <CardHeader>
               <CardTitle>Ringkasan Pesanan</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Tanggal:</span>
-                  <span className="font-medium">
-                    {format(bookingData.date, 'dd MMM yyyy', { locale: id })}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Waktu:</span>
-                  <span className="font-medium">{bookingData.time} WIB</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Metode:</span>
-                  <span className="font-medium">
-                    {bookingData.type === 'online' ? 'Online Meeting' : 'Tatap Muka'}
-                  </span>
-                </div>
-                <div className="text-sm">
-                  <div className="text-gray-600 mb-1">Konsultan:</div>
-                  <div className="font-medium">{bookingData.consultant?.name}</div>
-                </div>
-                {bookingData.notes && (
-                  <div className="text-sm">
-                    <div className="text-gray-600 mb-1">Catatan:</div>
-                    <div className="text-gray-800 p-2 bg-gray-50 rounded text-xs">
-                      {bookingData.notes}
-                    </div>
-                  </div>
-                )}
+            <CardContent className="space-y-4 text-sm">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Tanggal</span>
+                <span className="font-medium">
+                  {format(bookingData.date, "dd MMM yyyy", { locale: id })}
+                </span>
               </div>
-
-              <div className="border-t pt-4">
-                <div className="flex justify-between items-center text-lg font-semibold">
-                  <span>Total Bayar:</span>
-                  <span className="text-primary">{bookingData.consultant?.price}</span>
-                </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Waktu</span>
+                <span className="font-medium">{bookingData.time} WIB</span>
               </div>
-
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <div className="text-xs text-yellow-800">
-                  <strong>Catatan Penting:</strong>
-                  <ul className="mt-1 space-y-1">
-                    <li>• Pembayaran akan diverifikasi dalam 1x24 jam</li>
-                    <li>• Link meeting akan dikirim setelah pembayaran dikonfirmasi</li>
-                    <li>• Hubungi admin jika ada kendala</li>
-                  </ul>
-                </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Jenis Layanan</span>
+                <span className="font-medium">{getServiceTypeName()}</span>
               </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Metode</span>
+                <span className="font-medium">
+                  {bookingData.method === "online" ? "Online" : "Offline"}
+                </span>
+              </div>
+              <div className="flex justify-between border-t pt-3 font-semibold text-base">
+                <span>Total Biaya</span>
+                <span className="text-primary">{getServicePrice()}</span>
+              </div>
+              <Button
+                onClick={handleRedirectToPayment}
+                className="w-full text-white bg-blue-600 hover:bg-blue-700"
+                size="lg"
+              >
+                Bayar Sekarang
+              </Button>
             </CardContent>
           </Card>
         </div>

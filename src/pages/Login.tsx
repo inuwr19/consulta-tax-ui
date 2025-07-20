@@ -1,32 +1,61 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import axios from "@/lib/axios";
 
 const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    rememberMe: false
+    email: "",
+    password: "",
+    rememberMe: false,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login form submitted:', formData);
-    // Simulate successful login
-    navigate('/dashboard');
+
+    try {
+      // 1. Ambil CSRF Cookie dulu
+      await axios.get("/sanctum/csrf-cookie");
+
+      // 2. Kirim permintaan login
+      const response = await axios.post("/api/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+      console.log("User data:", response.data);
+
+      // 3. Redirect ke dashboard
+      navigate("/dashboard");
+    } catch (error: any) {
+      if (error.response?.status === 422) {
+        alert("Email atau password salah.");
+      } else if (error.response?.status === 500) {
+        alert("Terjadi kesalahan di server.");
+      } else {
+        alert("Terjadi kesalahan saat login.");
+      }
+      console.error("Login error:", error);
+    }
   };
 
   return (
@@ -38,13 +67,17 @@ const Login = () => {
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <span className="text-white font-bold">CT</span>
             </div>
-            <span className="text-2xl font-bold text-gray-900">ConsultaTax</span>
+            <span className="text-2xl font-bold text-gray-900">
+              ConsultaTax
+            </span>
           </Link>
         </div>
 
         <Card className="shadow-xl border-0 animate-slide-in">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl font-bold">Selamat Datang Kembali</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              Selamat Datang Kembali
+            </CardTitle>
             <CardDescription>
               Masuk ke akun Anda untuk melanjutkan konsultasi pajak
             </CardDescription>
@@ -89,7 +122,11 @@ const Login = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -100,15 +137,21 @@ const Login = () => {
                   <Checkbox
                     id="rememberMe"
                     checked={formData.rememberMe}
-                    onCheckedChange={(checked) => 
-                      setFormData(prev => ({ ...prev, rememberMe: checked as boolean }))
+                    onCheckedChange={(checked) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        rememberMe: checked as boolean,
+                      }))
                     }
                   />
                   <Label htmlFor="rememberMe" className="text-sm">
                     Ingat saya
                   </Label>
                 </div>
-                <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-primary hover:underline"
+                >
                   Lupa password?
                 </Link>
               </div>
@@ -130,8 +173,11 @@ const Login = () => {
 
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
-                  Belum punya akun?{' '}
-                  <Link to="/register" className="font-medium text-primary hover:underline">
+                  Belum punya akun?{" "}
+                  <Link
+                    to="/register"
+                    className="font-medium text-primary hover:underline"
+                  >
                     Daftar sekarang
                   </Link>
                 </p>
