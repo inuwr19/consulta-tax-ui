@@ -49,10 +49,7 @@ const Header = () => {
   const isActive = (path: string) => location.pathname === path;
 
   const navItems = isAdminRoute
-    ? [
-        { path: "/admin", label: "Admin Dashboard" },
-        { path: "/dashboard", label: "User Dashboard" },
-      ]
+    ? [{ path: "/admin", label: "Admin Dashboard" }]
     : [
         { path: "/dashboard", label: "Dashboard" },
         { path: "/booking", label: "Book Consultation" },

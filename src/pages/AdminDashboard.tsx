@@ -1,95 +1,136 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  Users,
+  Calendar,
+  DollarSign,
+  FileText,
+  TrendingUp,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import StatsCard from "@/components/StatsCard";
+import React, { useEffect, useState } from "react";
+import axios from "@/lib/axios";
 
-import { Users, Calendar, DollarSign, FileText, TrendingUp, Clock, CheckCircle, AlertCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import StatsCard from '@/components/StatsCard';
+interface Appointment {
+  id: number;
+  nama: string;
+  date: string;
+  time: string;
+  method: "online" | "offline";
+  service_type: string;
+  status: "pending_confirmation" | "confirmed" | "pending_payment";
+  gmeet_link: string | null;
+}
 
 const AdminDashboard = () => {
-  // Dummy data for admin dashboard
-  const pendingAppointments = [
-    {
-      id: '1',
-      clientName: 'John Doe',
-      date: '2024-01-15',
-      time: '10:00',
-      type: 'online',
-      service: 'Konsultasi Pajak SPT',
-      status: 'pending_confirmation'
-    },
-    {
-      id: '2',
-      clientName: 'Jane Smith',
-      date: '2024-01-15',
-      time: '14:00',
-      type: 'offline',
-      service: 'Pajak Perusahaan',
-      status: 'pending_payment'
-    },
-    {
-      id: '3',
-      clientName: 'Ahmad Rahman',
-      date: '2024-01-16',
-      time: '09:00',
-      type: 'online',
-      service: 'Tax Planning',
-      status: 'confirmed'
-    }
-  ];
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
 
-  const recentActivities = [
-    {
-      id: '1',
-      action: 'Konsultasi selesai',
-      client: 'Sarah Williams',
-      time: '2 jam yang lalu',
-      type: 'completed'
-    },
-    {
-      id: '2',
-      action: 'Pembayaran diterima',
-      client: 'Michael Brown',
-      time: '4 jam yang lalu',
-      type: 'payment'
-    },
-    {
-      id: '3',
-      action: 'Janji baru dibuat',
-      client: 'Lisa Anderson',
-      time: '6 jam yang lalu',
-      type: 'new_appointment'
-    },
-    {
-      id: '4',
-      action: 'Chat admin',
-      client: 'David Wilson',
-      time: '1 hari yang lalu',
-      type: 'chat'
+  const fetchAppointments = async () => {
+    try {
+      const response = await axios.get("/api/appointments");
+      const mapped = response.data.data.map((item: any) => ({
+        ...item,
+        gmeet_link: item.gmeet_link || "",
+      }));
+      setAppointments(mapped);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
     }
-  ];
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const updateGmeetLink = async (id: number, gmeetLink: string) => {
+    try {
+      await axios.post(`/api/appointments/${id}/update-gmeet`, {
+        gmeet_link: gmeetLink,
+      });
+      alert("Link Gmeet berhasil disimpan");
+      fetchAppointments(); // Refresh data
+    } catch (error) {
+      console.error(error);
+      alert("Gagal menyimpan link Gmeet");
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'pending_confirmation':
-        return <Badge variant="outline" className="text-yellow-600 border-yellow-600">Menunggu Konfirmasi</Badge>;
-      case 'pending_payment':
-        return <Badge variant="outline" className="text-orange-600 border-orange-600">Menunggu Pembayaran</Badge>;
-      case 'confirmed':
-        return <Badge variant="outline" className="text-green-600 border-green-600">Terkonfirmasi</Badge>;
+      case "pending_confirmation":
+        return (
+          <Badge
+            variant="outline"
+            className="text-yellow-600 border-yellow-600"
+          >
+            Menunggu Konfirmasi
+          </Badge>
+        );
+      case "pending_payment":
+        return (
+          <Badge
+            variant="outline"
+            className="text-orange-600 border-orange-600"
+          >
+            Menunggu Pembayaran
+          </Badge>
+        );
+      case "confirmed":
+        return (
+          <Badge variant="outline" className="text-green-600 border-green-600">
+            Terkonfirmasi
+          </Badge>
+        );
       default:
         return <Badge variant="outline">Unknown</Badge>;
     }
   };
 
+  const recentActivities = [
+    {
+      id: "1",
+      action: "Konsultasi selesai",
+      client: "Sarah Williams",
+      time: "2 jam yang lalu",
+      type: "completed",
+    },
+    {
+      id: "2",
+      action: "Pembayaran diterima",
+      client: "Michael Brown",
+      time: "4 jam yang lalu",
+      type: "payment",
+    },
+    {
+      id: "3",
+      action: "Janji baru dibuat",
+      client: "Lisa Anderson",
+      time: "6 jam yang lalu",
+      type: "new_appointment",
+    },
+    {
+      id: "4",
+      action: "Chat admin",
+      client: "David Wilson",
+      time: "1 hari yang lalu",
+      type: "chat",
+    },
+  ];
+
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'completed':
+      case "completed":
         return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'payment':
+      case "payment":
         return <DollarSign className="h-4 w-4 text-blue-500" />;
-      case 'new_appointment':
+      case "new_appointment":
         return <Calendar className="h-4 w-4 text-purple-500" />;
-      case 'chat':
+      case "chat":
         return <FileText className="h-4 w-4 text-gray-500" />;
       default:
         return <AlertCircle className="h-4 w-4 text-gray-400" />;
@@ -100,7 +141,9 @@ const AdminDashboard = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p className="text-gray-600 mt-2">AMZ Tax Consultant - Panel Administrasi</p>
+        <p className="text-gray-600 mt-2">
+          AMZ Tax Consultant - Panel Administrasi
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -148,28 +191,46 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {pendingAppointments.map((appointment) => (
-                  <div key={appointment.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-medium text-gray-900">{appointment.clientName}</h3>
-                        {getStatusBadge(appointment.status)}
-                      </div>
-                      <p className="text-sm text-gray-600 mb-1">{appointment.service}</p>
-                      <p className="text-sm text-gray-500">
-                        {appointment.date} • {appointment.time} • {appointment.type === 'online' ? 'Online' : 'Offline'}
-                      </p>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button size="sm" variant="outline">
-                        Detail
-                      </Button>
-                      {appointment.status === 'pending_confirmation' && (
-                        <Button size="sm">
-                          Konfirmasi
-                        </Button>
+                {appointments.map((appointment) => (
+                  <div key={appointment.id} className="border rounded p-4">
+                    <h2 className="font-semibold">{appointment.nama}</h2>
+                    <p>
+                      {appointment.date} • {appointment.time} •{" "}
+                      {appointment.method}
+                    </p>
+                    <p>{appointment.service_type}</p>
+                    <p>Status: {appointment.status}</p>
+                    {getStatusBadge(appointment.status)}
+
+                    {appointment.status === "confirmed" &&
+                      appointment.method === "online" && (
+                        <div className="flex gap-2 mt-2">
+                          <input
+                            type="text"
+                            placeholder="Masukkan link Gmeet"
+                            value={appointment.gmeet_link ?? ""}
+                            onChange={(e) => {
+                              const updated = appointments.map((a) =>
+                                a.id === appointment.id
+                                  ? { ...a, gmeet_link: e.target.value }
+                                  : a
+                              );
+                              setAppointments(updated);
+                            }}
+                            className="border px-2 py-1 rounded w-full"
+                          />
+                          <Button
+                            onClick={() =>
+                              updateGmeetLink(
+                                appointment.id,
+                                appointment.gmeet_link ?? ""
+                              )
+                            }
+                          >
+                            Simpan
+                          </Button>
+                        </div>
                       )}
-                    </div>
                   </div>
                 ))}
               </div>
@@ -177,7 +238,7 @@ const AdminDashboard = () => {
           </Card>
 
           {/* Quick Actions */}
-          <Card className="mt-6">
+          {/* <Card className="mt-6">
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
@@ -201,7 +262,7 @@ const AdminDashboard = () => {
                 </Button>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Recent Activities & Notifications */}
@@ -222,12 +283,8 @@ const AdminDashboard = () => {
                       <p className="text-sm font-medium text-gray-900">
                         {activity.action}
                       </p>
-                      <p className="text-sm text-gray-600">
-                        {activity.client}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {activity.time}
-                      </p>
+                      <p className="text-sm text-gray-600">{activity.client}</p>
+                      <p className="text-xs text-gray-500">{activity.time}</p>
                     </div>
                   </div>
                 ))}
@@ -244,16 +301,28 @@ const AdminDashboard = () => {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm font-medium text-red-800">Pembayaran Tertunda</p>
-                <p className="text-sm text-red-600">5 klien belum melakukan pembayaran</p>
+                <p className="text-sm font-medium text-red-800">
+                  Pembayaran Tertunda
+                </p>
+                <p className="text-sm text-red-600">
+                  5 klien belum melakukan pembayaran
+                </p>
               </div>
               <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm font-medium text-yellow-800">Jadwal Penuh</p>
-                <p className="text-sm text-yellow-600">Hari Rabu sudah fully booked</p>
+                <p className="text-sm font-medium text-yellow-800">
+                  Jadwal Penuh
+                </p>
+                <p className="text-sm text-yellow-600">
+                  Hari Rabu sudah fully booked
+                </p>
               </div>
               <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm font-medium text-blue-800">Update Sistem</p>
-                <p className="text-sm text-blue-600">Maintenance dijadwalkan Minggu malam</p>
+                <p className="text-sm font-medium text-blue-800">
+                  Update Sistem
+                </p>
+                <p className="text-sm text-blue-600">
+                  Maintenance dijadwalkan Minggu malam
+                </p>
               </div>
             </CardContent>
           </Card>
