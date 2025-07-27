@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Bell, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,15 +14,32 @@ import axios from "@/lib/axios";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string } | null>(
+    null
+  );
   const location = useLocation();
   const navigate = useNavigate();
+
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("/api/user");
+        setUser(res.data); // pastikan API mengembalikan { name, email }
+      } catch (error) {
+        console.error("Gagal mengambil data user:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleLogout = async () => {
     try {
       await axios.post("/api/logout");
-      localStorage.removeItem("token"); // kalau pakai token
-      // Atau bisa hapus cookie kalau perlu
-      navigate("/"); // Redirect ke halaman home
+      localStorage.removeItem("token");
+      navigate("/");
     } catch (error) {
       console.error("Logout gagal:", error);
       alert("Gagal logout, coba lagi.");
@@ -30,7 +47,6 @@ const Header = () => {
   };
 
   const isActive = (path: string) => location.pathname === path;
-  const isAdminRoute = location.pathname.startsWith("/admin");
 
   const navItems = isAdminRoute
     ? [
@@ -47,7 +63,6 @@ const Header = () => {
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <Link
             to={isAdminRoute ? "/admin" : "/dashboard"}
             className="flex items-center space-x-2"
@@ -100,7 +115,11 @@ const Header = () => {
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="/placeholder-avatar.jpg" alt="User" />
                     <AvatarFallback>
-                      {isAdminRoute ? "AD" : "JD"}
+                      {(user?.name || "JD")
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -113,10 +132,16 @@ const Header = () => {
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1 leading-none">
                     <p className="font-medium">
-                      {isAdminRoute ? "Admin User" : "John Doe"}
+                      {user
+                        ? user.name
+                        : isAdminRoute
+                        ? "Admin User"
+                        : "John Doe"}
                     </p>
                     <p className="w-[200px] truncate text-sm text-muted-foreground">
-                      {isAdminRoute
+                      {user
+                        ? user.email
+                        : isAdminRoute
                         ? "admin@amztaxconsultant.com"
                         : "john.doe@example.com"}
                     </p>
@@ -126,25 +151,15 @@ const Header = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/profile">Profile</Link>
                 </DropdownMenuItem>
-                {/* <DropdownMenuItem>Settings</DropdownMenuItem>
-                {isAdminRoute ? (
-                  <DropdownMenuItem asChild>
-                    <Link to="/dashboard">Switch to User View</Link>
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem asChild>
-                    <Link to="/admin">Admin Panel</Link>
-                  </DropdownMenuItem>
-                )} */}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link to="/">Sign Out</Link>
+                <DropdownMenuItem onClick={handleLogout}>
+                  Sign Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu toggle */}
           <div className="md:hidden">
             <Button
               variant="ghost"
@@ -186,23 +201,6 @@ const Header = () => {
                 >
                   Profile
                 </Link>
-                {/* {isAdminRoute ? (
-                  <Link
-                    to="/dashboard"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Switch to User View
-                  </Link>
-                ) : (
-                  <Link
-                    to="/admin"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Admin Panel
-                  </Link>
-                )} */}
                 <button
                   onClick={handleLogout}
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
