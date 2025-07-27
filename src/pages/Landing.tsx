@@ -29,8 +29,33 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import React, { useEffect, useState } from "react";
+import axios from "@/lib/axios";
+
+interface Consultant {
+  id: number;
+  name: string;
+  specialty: string;
+  experience_years: string;
+  photo?: string;
+}
 
 const Landing = () => {
+  const [consultants, setConsultants] = useState<Consultant[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    axios
+      .get("/api/consultants")
+      .then((res) => {
+        setConsultants(res.data.data); // pastikan `data` dari Laravel Resource
+      })
+      .catch((err) => {
+        console.error("Failed to fetch consultants", err);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   const services = [
     {
       title: "Konsultasi Pajak Pribadi",
@@ -58,24 +83,6 @@ const Landing = () => {
     "Harga transparan tanpa biaya tersembunyi",
     "Garansi kepuasan pelanggan",
     "Layanan follow-up berkelanjutan",
-  ];
-
-  const consultants = [
-    {
-      name: "Budi Santoso, S.E., M.Ak",
-      specialization: "Pajak Penghasilan & SPT",
-      experience: "10+ tahun",
-    },
-    {
-      name: "Sari Dewi, S.E., M.Si",
-      specialization: "PPN & Pajak Perusahaan",
-      experience: "8+ tahun",
-    },
-    {
-      name: "Ahmad Rahman, S.E., CPA",
-      specialization: "Tax Planning & Compliance",
-      experience: "12+ tahun",
-    },
   ];
 
   const taxSavingsData = [
@@ -204,6 +211,63 @@ const Landing = () => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                Mengapa Memilih AMZ Tax Consultant?
+              </h2>
+              <div className="space-y-4">
+                {features.map((feature, index) => (
+                  <div key={index} className="flex items-start">
+                    <CheckCircle className="h-6 w-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                    <p className="text-gray-700">{feature}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-white p-8 rounded-2xl shadow-lg">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+                Tim Konsultan Profesional
+              </h3>
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <div className="space-y-4">
+                  {consultants.map((consultant) => (
+                    <div
+                      key={consultant.id}
+                      className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-l-4 border-blue-500 flex items-center space-x-4"
+                    >
+                      {consultant.photo && (
+                        <img
+                          src={consultant.photo}
+                          alt={consultant.name}
+                          className="w-16 h-16 rounded-full object-cover border border-gray-300"
+                        />
+                      )}
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          {consultant.name}
+                        </h4>
+                        <p className="text-blue-600 text-sm font-medium">
+                          {consultant.specialty}
+                        </p>
+                        <p className="text-gray-500 text-sm">
+                          Pengalaman: {consultant.experience_years}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -372,58 +436,6 @@ const Landing = () => {
                   </CardContent>
                 </Card>
               ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Us Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-                Mengapa Memilih AMZ Tax Consultant?
-              </h2>
-              <div className="space-y-4">
-                {features.map((feature, index) => (
-                  <div key={index} className="flex items-start">
-                    <CheckCircle className="h-6 w-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                    <p className="text-gray-700">{feature}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-8">
-                <Button asChild size="lg">
-                  <Link to="/about">
-                    Pelajari Lebih Lanjut
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              </div>
-            </div>
-            <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                Tim Konsultan Profesional
-              </h3>
-              <div className="space-y-4">
-                {consultants.map((consultant, index) => (
-                  <div
-                    key={index}
-                    className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-l-4 border-blue-500"
-                  >
-                    <h4 className="font-semibold text-gray-900">
-                      {consultant.name}
-                    </h4>
-                    <p className="text-blue-600 text-sm font-medium">
-                      {consultant.specialization}
-                    </p>
-                    <p className="text-gray-500 text-sm">
-                      Pengalaman: {consultant.experience}
-                    </p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
