@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +15,7 @@ import About from "./pages/About";
 import PaymentConfirmation from "./pages/PaymentConfirmation";
 import CustomNotFound from "./pages/CustomNotFound";
 import NotFound from "./pages/NotFound";
+import ProtectedAdminRoute from "./pages/ProtectedAdminRoute";
 
 const queryClient = new QueryClient();
 
@@ -30,20 +30,64 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          
+
           {/* Protected user routes - with layout */}
-          <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
-          <Route path="/profile" element={<Layout><Profile /></Layout>} />
-          <Route path="/booking" element={<Layout><Booking /></Layout>} />
-          <Route path="/about" element={<Layout><About /></Layout>} />
-          <Route path="/payment-confirmation" element={<Layout><PaymentConfirmation /></Layout>} />
-          
+          <Route
+            path="/dashboard"
+            element={
+              <Layout>
+                <Dashboard />
+              </Layout>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <Layout>
+                <Profile />
+              </Layout>
+            }
+          />
+          <Route
+            path="/booking"
+            element={
+              <Layout>
+                <Booking />
+              </Layout>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <Layout>
+                <About />
+              </Layout>
+            }
+          />
+          <Route
+            path="/payment-confirmation"
+            element={
+              <Layout>
+                <PaymentConfirmation />
+              </Layout>
+            }
+          />
+
           {/* Admin routes - with layout */}
-          <Route path="/admin" element={<Layout><AdminDashboard /></Layout>} />
-          
+          <Route element={<ProtectedAdminRoute />}>
+            <Route
+              path="/admin"
+              element={
+                <Layout>
+                  <AdminDashboard />
+                </Layout>
+              }
+            />
+          </Route>
+
           {/* Custom 404 page */}
           <Route path="/404" element={<CustomNotFound />} />
-          
+
           {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />
         </Routes>

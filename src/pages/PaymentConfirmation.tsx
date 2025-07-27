@@ -67,7 +67,7 @@ const PaymentConfirmation = () => {
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">Pembayaran Berhasil!</h3>
                 <p class="text-gray-600 mb-4">Transaksi Anda telah berhasil diproses.</p>
-                <button onclick="this.parentElement.parentElement.remove()" 
+                <button id="redirectBtn"
                         class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">
                   OK
                 </button>
@@ -80,6 +80,12 @@ const PaymentConfirmation = () => {
             reference_number: referenceNumber,
             status: "paid",
           });
+
+          document
+            .getElementById("redirectBtn")
+            ?.addEventListener("click", () => {
+              window.location.href = "/dashboard";
+            });
         },
         onPending: async (result: any) => {
           // Pending notification
@@ -94,7 +100,7 @@ const PaymentConfirmation = () => {
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">Menunggu Pembayaran</h3>
                 <p class="text-gray-600 mb-4">Pembayaran Anda sedang diproses.</p>
-                <button onclick="this.parentElement.parentElement.remove()" 
+                <button id="redirectBtn"
                         class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition-colors">
                   OK
                 </button>
@@ -107,6 +113,12 @@ const PaymentConfirmation = () => {
             reference_number: referenceNumber,
             status: "pending",
           });
+
+          document
+            .getElementById("redirectBtn")
+            ?.addEventListener("click", () => {
+              window.location.href = "/dashboard";
+            });
         },
         onError: async (result: any) => {
           // Error notification
@@ -121,7 +133,7 @@ const PaymentConfirmation = () => {
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-2">Pembayaran Gagal</h3>
                 <p class="text-gray-600 mb-4">Terjadi kesalahan saat memproses pembayaran.</p>
-                <button onclick="this.parentElement.parentElement.remove()" 
+                <button id="redirectBtn" 
                         class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
                   OK
                 </button>
@@ -134,6 +146,12 @@ const PaymentConfirmation = () => {
             reference_number: referenceNumber,
             status: "failed",
           });
+
+          document
+            .getElementById("redirectBtn")
+            ?.addEventListener("click", () => {
+              window.location.href = "/dashboard";
+            });
         },
         onClose: function () {
           // Close notification

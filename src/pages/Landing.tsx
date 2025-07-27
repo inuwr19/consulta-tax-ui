@@ -31,6 +31,7 @@ import {
 } from "recharts";
 import React, { useEffect, useState } from "react";
 import axios from "@/lib/axios";
+import FloatingChatbot from "@/components/FloatingChatbot";
 
 interface Consultant {
   id: number;
@@ -487,6 +488,8 @@ const Landing = () => {
           </div>
         </div>
       </section>
+
+      <FloatingChatbot />
     </div>
   );
 };

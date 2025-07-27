@@ -34,23 +34,30 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      // 1. Ambil CSRF Cookie dulu
+      // Ambil CSRF Cookie dulu
       await axios.get("/sanctum/csrf-cookie");
 
-      // 2. Kirim permintaan login
+      // Kirim permintaan login
       const response = await axios.post("/api/login", {
         email: formData.email,
         password: formData.password,
       });
-      console.log("User data:", response.data);
 
-      // 3. Redirect ke dashboard
-      navigate("/dashboard");
+      const userRole = response.data.role;
+
+      // Simpan user role di localStorage/sessionStorage
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("role", userRole);
+
+      // Redirect sesuai role
+      if (userRole === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       if (error.response?.status === 422) {
         alert("Email atau password salah.");
-      } else if (error.response?.status === 500) {
-        alert("Terjadi kesalahan di server.");
       } else {
         alert("Terjadi kesalahan saat login.");
       }

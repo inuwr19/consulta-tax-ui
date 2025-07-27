@@ -35,10 +35,34 @@ const Header = () => {
     fetchUser();
   }, []);
 
+  // const handleLogout = async () => {
+  //   try {
+  //     await axios.post("/api/logout");
+  //     localStorage.removeItem("token");
+  //     navigate("/");
+  //   } catch (error) {
+  //     console.error("Logout gagal:", error);
+  //     alert("Gagal logout, coba lagi.");
+  //   }
+  // };
+
   const handleLogout = async () => {
     try {
-      await axios.post("/api/logout");
+      const token = localStorage.getItem("token");
+      const user = localStorage.getItem("user");
+      await axios.post(
+        "/api/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
+
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       navigate("/");
     } catch (error) {
       console.error("Logout gagal:", error);

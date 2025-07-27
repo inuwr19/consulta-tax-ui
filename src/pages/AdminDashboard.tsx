@@ -32,7 +32,7 @@ const AdminDashboard = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get("/api/appointments");
+      const response = await axios.get("/api/admin/appointments"); // Ganti endpoint-nya
       const mapped = response.data.data.map((item: any) => ({
         ...item,
         gmeet_link: item.gmeet_link || "",
