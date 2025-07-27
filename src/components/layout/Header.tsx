@@ -126,7 +126,7 @@ const Header = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/profile">Profile</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
+                {/* <DropdownMenuItem>Settings</DropdownMenuItem>
                 {isAdminRoute ? (
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard">Switch to User View</Link>
@@ -135,7 +135,7 @@ const Header = () => {
                   <DropdownMenuItem asChild>
                     <Link to="/admin">Admin Panel</Link>
                   </DropdownMenuItem>
-                )}
+                )} */}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <Link to="/">Sign Out</Link>
@@ -186,7 +186,7 @@ const Header = () => {
                 >
                   Profile
                 </Link>
-                {isAdminRoute ? (
+                {/* {isAdminRoute ? (
                   <Link
                     to="/dashboard"
                     className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"
@@ -202,7 +202,7 @@ const Header = () => {
                   >
                     Admin Panel
                   </Link>
-                )}
+                )} */}
                 <button
                   onClick={handleLogout}
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-50"

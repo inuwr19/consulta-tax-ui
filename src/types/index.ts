@@ -8,15 +8,26 @@ export interface User {
 }
 
 export interface Appointment {
-  id: string;
+  // id: string;
+  // date: string;
+  // time: string;
+  // type: 'online' | 'offline';
+  // status: 'completed' | 'pending' | 'cancelled';
+  // consultant: string;
+  // notes?: string;
+  // meetingLink?: string;
+  // paymentStatus: 'paid' | 'pending' | 'cancelled';
+  id: number;
+  name: string;
   date: string;
   time: string;
-  type: 'online' | 'offline';
-  status: 'completed' | 'pending' | 'cancelled';
-  consultant: string;
+  type: 'online' | 'offline'; // diambil dari field `method`
+  status: 'pending' | 'confirmed' | 'cancelled';
+  meetingLink?: string;       // dari gmeet_link
+  consultant?: string;        // dari relasi consultant.name
+  paymentStatus: 'paid' | 'pending'; // dari relasi payment.status
   notes?: string;
-  meetingLink?: string;
-  paymentStatus: 'paid' | 'pending' | 'cancelled';
+  gmeet_link?: string; // link untuk meeting online
 }
 
 export interface ChatMessage {
