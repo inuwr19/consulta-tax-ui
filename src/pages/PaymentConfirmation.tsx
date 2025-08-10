@@ -36,6 +36,7 @@ const PaymentConfirmation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const bookingData = location.state?.bookingData;
+  console.log("Booking Data:", bookingData);
 
   useEffect(() => {
     axios.get("/sanctum/csrf-cookie").catch((err) => {
@@ -331,7 +332,7 @@ const PaymentConfirmation = () => {
                   <div className="md:col-span-2">
                     <Label className="text-gray-600">Metode Konsultasi</Label>
                     <div className="p-2 rounded bg-gray-50 border text-gray-800 flex items-center gap-2">
-                      {bookingData.type === "online" ? (
+                      {bookingData.method === "online" ? (
                         <>
                           <Video className="h-4 w-4 text-primary" />
                           Online Meeting
@@ -417,7 +418,9 @@ const PaymentConfirmation = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">Metode</span>
                 <span className="font-medium">
-                  {bookingData.method === "online" ? "Online" : "Offline"}
+                  {bookingData.method === "online"
+                    ? "Online"
+                    : "Offline / Tatap Muka"}
                 </span>
               </div>
               <div className="flex justify-between border-t pt-3 font-semibold text-base">
