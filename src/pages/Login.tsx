@@ -159,7 +159,7 @@ const Login = () => {
                   to="/forgot-password"
                   className="text-sm text-primary hover:underline"
                 >
-                  Lupa password?
+                  {/*Lupa password?*/}
                 </Link>
               </div>
 

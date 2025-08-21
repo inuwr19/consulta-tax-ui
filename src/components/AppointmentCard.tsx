@@ -89,13 +89,13 @@ const AppointmentCard = ({ appointment, onAction }: AppointmentCardProps) => {
             <span>{appointment.time}</span>
           </div>
           <div className="flex items-center space-x-2 text-sm text-gray-600">
-            {appointment.type === "online" ? (
+            {appointment.method === "online" ? (
               <Video className="w-4 h-4" />
             ) : (
               <MapPin className="w-4 h-4" />
             )}
             <span>
-              {appointment.type === "online" ? "Online Meeting" : "Tatap Muka"}
+              {appointment.method === "online" ? "Online Meeting" : "Tatap Muka"}
             </span>
           </div>
           <div className="text-sm text-gray-600">

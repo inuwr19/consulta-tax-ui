@@ -21,7 +21,8 @@ export interface Appointment {
   name: string;
   date: string;
   time: string;
-  type: 'online' | 'offline'; // diambil dari field `method`
+  // type: 'online' | 'offline'; // diambil dari field `method`
+  method: 'online' | 'offline';
   status: 'pending' | 'confirmed' | 'cancelled';
   meetingLink?: string;       // dari gmeet_link
   consultant?: string;        // dari relasi consultant.name

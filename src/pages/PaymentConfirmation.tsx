@@ -434,6 +434,30 @@ const PaymentConfirmation = () => {
               >
                 Bayar Sekarang
               </Button>
+
+              {/* Catatan Penting */}
+              <div className="mt-4 p-3 rounded-lg border-l-4 border-yellow-500 bg-yellow-50 flex items-start gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01M12 5c.38 0 .74.21.92.55l7.01 12.06A1 1 0 0119.01 19H4.99a1 1 0 01-.92-1.39l7.01-12.06A1 1 0 0112 5z"
+                  />
+                </svg>
+                <p className="text-sm text-yellow-700 font-medium leading-relaxed">
+                  Harap hadir sesuai dengan jadwal yang telah dipesan. 
+                  Ketidakhadiran pada jadwal yang telah ditetapkan tidak dapat dilakukan 
+                  <span className="font-semibold"> pengembalian dana (refund) </span> 
+                  maupun <span className="font-semibold"> penjadwalan ulang (reschedule)</span>.
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>

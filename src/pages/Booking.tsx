@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import axios from "@/lib/axios";
 
+
 interface Consultant {
   id: number;
   name: string;
@@ -157,7 +158,8 @@ const Booking = () => {
     );
 
     try {
-      const formattedDate = selectedDate.toISOString().split("T")[0]; // hasil: '2025-07-24'
+      // const formattedDate = selectedDate.toISOString().split("T")[0]; // hasil: '2025-07-24'
+      const formattedDate = format(selectedDate, "yyyy-MM-dd"); // hasil: '2025-07-24'
 
       const response = await axios.post("/api/appointments", {
         consultant_id: selectedConsultantObj.id,

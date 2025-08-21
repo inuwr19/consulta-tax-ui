@@ -40,7 +40,7 @@ const Profile = () => {
           id: item.id,
           date: item.date,
           time: item.time,
-          type: item.method,
+          method: item.method,
           status: item.status,
           consultant: item.consultant?.name ?? "Tidak diketahui",
           notes: item.notes,

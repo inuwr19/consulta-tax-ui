@@ -18,7 +18,7 @@ import axios from "@/lib/axios";
 
 const Dashboard = () => {
   const [consultants, setConsultants] = useState<any[]>([]);
-  const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -175,9 +175,9 @@ const Dashboard = () => {
               <AppointmentCard
                 key={appointment.id}
                 appointment={appointment}
-                onAction={(action, appointment) => {
-                  console.log(`Action: ${action}`, appointment);
-                }}
+                // onAction={(action, appointment) => {
+                //   console.log(`Action: ${action}`, appointment);
+                // }}
               />
             ))}
           </div>
